@@ -2,18 +2,6 @@ include Math
 
 module Utils
 
-  def self.create_grid()## Create board
-    board = Array.new($RESOLUTION)
-    for i in (0...$RESOLUTION)
-      board[i] = Array.new($RESOLUTION)
-      for j in (0...$RESOLUTION)
-        board[i][j] = $BACKGROUND_COLOR
-      end
-    end
-    return board
-  end
-
-
   ## Write GRID to OUTFILE
   def self.write_out(file: $OUTFILE, mat: $TEMP_MAT)
     puts "Writing out to #{file}" if $DEBUGGING

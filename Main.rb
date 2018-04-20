@@ -3,6 +3,7 @@ require './Draw.rb'
 require './Matrix.rb'
 require './MatrixUtils.rb'
 require './Utils.rb'
+require './Screen.rb'
 
 include Math
 
@@ -20,7 +21,7 @@ $TEMPFILE = "temmmmp.ppm" # Used as temp storage for displaying
 $dt = 0.1 # The amount that the parametric t is incremented by on each loop
 
 # Static
-$GRID = Utils.create_grid()
+$Screen = Screen.new($RESOLUTION)
 $COORDSYS = CStack.new()
 $RC = $DRAW_COLOR[0] # Red component
 $GC = $DRAW_COLOR[1]
