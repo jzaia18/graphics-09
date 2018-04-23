@@ -2,32 +2,8 @@ include Math
 
 module Utils
 
-  ## Write GRID to OUTFILE
-  def self.write_out(file: $OUTFILE, mat: $TEMP_MAT)
-    puts "Writing out to #{file}" if $DEBUGGING
-    extension = file.dup #filename with any extension
-    file[file.index('.')..-1] = '.ppm'
-    #$GRID = create_grid()
-    outfile = File.open(file, 'w')
-    outfile.puts "P3 #$RESOLUTION #$RESOLUTION 255" #Header in 1 line
-
-    #Write PPM data
-    for row in $GRID
-      for pixel in row
-        for rgb in pixel
-          outfile.print rgb
-          outfile.print ' '
-        end
-        outfile.print '   '
-      end
-      outfile.puts ''
-    end
-    outfile.close()
-
-    #Convert filetype
-    puts %x[convert #{file} #{extension}]
-    if not extension["ppm"]
-      puts %x[rm #{file}] end
+  def self.write_out(file: $OUTFILE)
+    $SCREEN.write_out(file)
   end
 
   def self.display(tempfile: $TEMPFILE)
@@ -99,7 +75,7 @@ module Utils
         MatrixUtils.multiply($COORDSYS.peek(), temp)
         Draw.push_polygon_matrix(temp)
       when "clear"
-        $GRID = create_grid()
+        $SCREEN = Screen.new($RESOLUTION)
       when "scale"
         args = file.gets.chomp.split(" ")
         for i in (0...3); args[i] = args[i].to_f end

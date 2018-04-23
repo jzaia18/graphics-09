@@ -21,7 +21,7 @@ $TEMPFILE = "temmmmp.ppm" # Used as temp storage for displaying
 $dt = 0.1 # The amount that the parametric t is incremented by on each loop
 
 # Static
-$Screen = Screen.new($RESOLUTION)
+$SCREEN = Screen.new($RESOLUTION)
 $COORDSYS = CStack.new()
 $RC = $DRAW_COLOR[0] # Red component
 $GC = $DRAW_COLOR[1]

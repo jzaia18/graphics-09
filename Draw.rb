@@ -4,10 +4,8 @@ require './VectorUtils.rb'
 module Draw
 
   # Plot a point on GRID (from top left)
-  def self.plot(x, y, r: $RC, g: $GC, b: $BC)
-    y = $RESOLUTION - y
-    return if x < 0 || y < 0 || x >= $RESOLUTION || y >= $RESOLUTION
-    $GRID[y.to_i][x.to_i] = [r.floor, g.floor, b.floor]
+  def self.plot(x, y, z, r: $RC, g: $GC, b: $BC)
+    $SCREEN.plot(x, y, z, r: r, g: g, b: b)
   end
 
   # Define a line by 2 points
