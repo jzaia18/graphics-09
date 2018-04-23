@@ -3,7 +3,7 @@ include Math
 module Utils
 
   def self.write_out(file: $OUTFILE)
-    $SCREEN.write_out(file)
+    $SCREEN.write_out(file: file)
   end
 
   def self.display(tempfile: $TEMPFILE)

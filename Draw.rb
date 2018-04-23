@@ -9,22 +9,23 @@ module Draw
   end
 
   # Define a line by 2 points
-  def self.line(x0, y0, x1, y1, r: $RC, g: $GC, b: $BC)
+  def self.line(x0, y0, z0, x1, y1, z1, r: $RC, g: $GC, b: $BC)
     # x0 is always left of x1
-    return line(x1, y1, x0, y0, r: r, g: g, b: b) if x1 < x0
+    return line(x1, y1, z1, x0, y0, z0, r: r, g: g, b: b) if x1 < x0
 
     #init vars
     dy = y1-y0
     dx = x1-x0
     x = x0
     y = y0
+    z = z0
 
     ## Begin actual algorithm:
     if dy >= 0 #if the line is in octants I or II
       if dy < dx #octant I
         d = 2*dy - dx
         while x < x1
-          plot(x, y, r: r, g: g, b: b)
+          plot(x, y, z, r: r, g: g, b: b)
           if d > 0
             y+=1
             d-=2*dx
@@ -32,12 +33,12 @@ module Draw
           x+=1
           d+=2*dy
         end
-        plot(x, y, r: r, g: g, b: b)
+        plot(x, y, z, r: r, g: g, b: b)
 
       else #octant II
         d = dy - 2*dx
         while y < y1
-          plot(x, y, r: r, g: g, b: b)
+          plot(x, y, z, r: r, g: g, b: b)
           if d < 0
             x+=1
             d+=2*dy
@@ -45,7 +46,7 @@ module Draw
           y+=1
           d-=2*dx
         end
-        plot(x, y, r: r, g: g, b: b)
+        plot(x, y, z, r: r, g: g, b: b)
       end
 
     else #if the line is in octants VII or VIII
@@ -53,7 +54,7 @@ module Draw
       if dy.abs > dx #octant VII
         d = dy + 2*dx
         while y > y1
-          plot(x, y, r: r, g: g, b: b)
+          plot(x, y, z, r: r, g: g, b: b)
           if d > 0
             x+=1
             d+=2*dy
@@ -61,12 +62,12 @@ module Draw
           y-=1
           d+=2*dx
         end
-        plot(x, y, r: r, g: g, b: b)
+        plot(x, y, z, r: r, g: g, b: b)
 
       else #octant VIII
         d = 2*dy + dx
         while x < x1
-          plot(x, y, r: r, g: g, b: b)
+          plot(x, y, z, r: r, g: g, b: b)
           if d < 0
             y-=1
             d+=2*dx
@@ -74,7 +75,7 @@ module Draw
           x+=1
           d+=2*dy
         end
-        plot(x, y, r: r, g: g, b: b)
+        plot(x, y, z, r: r, g: g, b: b)
       end
     end
   end
@@ -262,12 +263,19 @@ module Draw
       coord1 = polymat.get_col(i + 1)
       coord2 = polymat.get_col(i + 2)
       if (calc_normal(coord0, coord1, coord2)[2] >= 0)
-        line(coord0[0].to_i, coord0[1].to_i, coord1[0].to_i, coord1[1].to_i)
-        line(coord1[0].to_i, coord1[1].to_i, coord2[0].to_i, coord2[1].to_i)
-        line(coord2[0].to_i, coord2[1].to_i, coord0[0].to_i, coord0[1].to_i)
+        line(coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, r: 0, g: 0, b: 0)
+        line(coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, r: 0, g: 0, b: 0)
+        line(coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, r: 0, g: 0, b: 0)
+        fill_triangle(coord0, coord1, coord2)
       end
       i+=3
     end
+  end
+
+  # Expects 3 lists of length 3 representing coords, fills triangle using scanline conversion
+  def self.fill_triangle(p0, p1, p2)
+    p0[1] > p1[1] && p0[1] > p2[1]? t = p0 : (p1[1] > p2[1] && p1[1] > p0[1]? t = p1: t = p2)
+    ## NEEDS MORE TERNARY OPERATORS!
   end
 
   # Given a triangle, calculate its normal
