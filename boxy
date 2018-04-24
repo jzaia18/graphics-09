@@ -1,0 +1,13 @@
+push
+move
+250 250 250
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+z 90
+box
+0 0 0 100 100 100
+display

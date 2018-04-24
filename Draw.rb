@@ -275,11 +275,16 @@ module Draw
   # Expects 3 lists of length 3 representing coords, fills triangle using scanline conversion
   def self.fill_triangle(p0, p1, p2, r: $RC, g: $GC, b: $BC)
     # Sexy ternary operator magic
-    p0[1] > p1[1] && p0[1] > p2[1] ? top = p0 : (p1[1] > p2[1] && p1[1] > p0[1] ? top = p1: top = p2)
-    p0[1] < p1[1] && p0[1] < p2[1] ? bot = p0 : (p1[1] < p2[1] && p1[1] < p0[1] ? bot = p1: bot = p2)
+    p0[1] >= p1[1] && p0[1] >= p2[1] ? top = p0 : (p1[1] >= p2[1] && p1[1] >= p0[1] ? top = p1 : top = p2)
+    p0[1] <= p1[1] && p0[1] <= p2[1] ? bot = p0 : (p1[1] <= p2[1] && p1[1] <= p0[1] ? bot = p1 : bot = p2)
     p0 != bot && p0 != top ? mid = p0 : (p1 != bot && p1 != top ? mid = p1 : mid = p2)
 
-    if $DEBUGGING && bot[1] == top[1]
+    puts "???????" if bot == mid or mid == top or bot == top
+
+    puts "input:   #{[p0.to_s, p1.to_s, p2.to_s]}"
+    puts "ordered: #{[bot, mid, top]}"
+
+    if $DEBUGGING && bot[1] >= top[1]
       puts "ERROR: DEGENERATE TRIANGLE..."
       puts [p0.to_s, p1.to_s, p2.to_s].to_s
       puts [bot, mid, top].to_s
@@ -288,16 +293,16 @@ module Draw
 
     x0 = x1 = bot[0]
     dx0 = (top[0] - bot[0])/(top[1] - bot[1])
-    (mid[1] - bot[1]).abs < 0.99 ? dx1 = 0 : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1]) #catch div by 0 error
+    (mid[1] - bot[1]).abs < 1 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1]) #catch div by 0 error
     ##TODO: Zs
-    for y in ((bot[1].to_i)..(top[1].to_i))
-      puts [x0, y, 5, x1, y, 5].to_s
-      line(x0, y, 5, x1, y, 5, r: r, g: g, b: b)
-      if y >= mid[1]
-        (mid[1] - bot[1]).abs < 0.99 ? dx1 = 0 : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
-      end
+    for y in ((bot[1].to_i+1)..(top[1].to_i))
       x0 += dx0
       x1 += dx1
+      #puts [x0, y, 5, x1, y, 5].to_s
+      line(x0, y, 5, x1, y, 5, r: r, g: g, b: b)
+      if y >= mid[1]
+        (top[1] - mid[1]).abs < 1 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
+      end
     end
   end
 
