@@ -1,7 +1,7 @@
 class Screen
 
   def initialize(res)
-    @res = res
+    @res = res.to_i
     @rgb_grid = Array.new(res)
     @z_grid = Array.new(res)
     for i in (0...res)
@@ -15,9 +15,13 @@ class Screen
   end
 
   def plot(x, y, z, r: $RC, g: $GC, b: $BC)
+    y = @res - y.to_i
+    x = x.to_i
     return if x < 0 || y < 0 || x >= @res || y >= @res
-    ##TODO: check z vals
-    @rgb_grid[@res - y.to_i][x.to_i] = [r.to_i, g.to_i, b.to_i]
+    if @z_grid[y][x] < z
+      @z_grid[y][x] = z
+      @rgb_grid[y][x] = [r.to_i, g.to_i, b.to_i]
+    end
   end
 
   ## Write GRID to OUTFILE

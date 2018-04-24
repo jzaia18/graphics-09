@@ -145,7 +145,7 @@ module Draw
     add_polygon(x1, y0, z1,   x0, y1, z1,   x0, y0, z1,   mat) # Back
     add_polygon(x1, y0, z1,   x1, y1, z1,   x0, y1, z1,   mat)
     add_polygon(x1, y0, z0,   x1, y1, z1,   x1, y0, z1,   mat) # Right
-    add_polygon(x1, y0, z0,   x1, y1, z0,   x0, y0, z0,   mat)
+    add_polygon(x1, y0, z0,   x1, y1, z0,   x1, y1, z1,   mat)
     add_polygon(x0, y0, z1,   x0, y1, z0,   x0, y0, z0,   mat) # Left
     add_polygon(x0, y0, z1,   x0, y1, z1,   x0, y1, z0,   mat)
     add_polygon(x0, y0, z1,   x1, y0, z0,   x1, y0, z1,   mat) # Top
@@ -262,20 +262,43 @@ module Draw
       coord0 = polymat.get_col(i)
       coord1 = polymat.get_col(i + 1)
       coord2 = polymat.get_col(i + 2)
-      if (calc_normal(coord0, coord1, coord2)[2] >= 0)
+      if (calc_normal(coord0, coord1, coord2)[2] > 0)
         line(coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, r: 0, g: 0, b: 0)
         line(coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, r: 0, g: 0, b: 0)
         line(coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, r: 0, g: 0, b: 0)
-        fill_triangle(coord0, coord1, coord2)
+        fill_triangle(coord0, coord1, coord2, r: rand(256), g: rand(256), b: rand(256))
       end
       i+=3
     end
   end
 
   # Expects 3 lists of length 3 representing coords, fills triangle using scanline conversion
-  def self.fill_triangle(p0, p1, p2)
-    p0[1] > p1[1] && p0[1] > p2[1]? t = p0 : (p1[1] > p2[1] && p1[1] > p0[1]? t = p1: t = p2)
-    ## NEEDS MORE TERNARY OPERATORS!
+  def self.fill_triangle(p0, p1, p2, r: $RC, g: $GC, b: $BC)
+    # Sexy ternary operator magic
+    p0[1] > p1[1] && p0[1] > p2[1] ? top = p0 : (p1[1] > p2[1] && p1[1] > p0[1] ? top = p1: top = p2)
+    p0[1] < p1[1] && p0[1] < p2[1] ? bot = p0 : (p1[1] < p2[1] && p1[1] < p0[1] ? bot = p1: bot = p2)
+    p0 != bot && p0 != top ? mid = p0 : (p1 != bot && p1 != top ? mid = p1 : mid = p2)
+
+    if $DEBUGGING && bot[1] == top[1]
+      puts "ERROR: DEGENERATE TRIANGLE..."
+      puts [p0.to_s, p1.to_s, p2.to_s].to_s
+      puts [bot, mid, top].to_s
+      return
+    end
+
+    x0 = x1 = bot[0]
+    dx0 = (top[0] - bot[0])/(top[1] - bot[1])
+    (mid[1] - bot[1]).abs < 0.99 ? dx1 = 0 : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1]) #catch div by 0 error
+    ##TODO: Zs
+    for y in ((bot[1].to_i)..(top[1].to_i))
+      puts [x0, y, 5, x1, y, 5].to_s
+      line(x0, y, 5, x1, y, 5, r: r, g: g, b: b)
+      if y >= mid[1]
+        (mid[1] - bot[1]).abs < 0.99 ? dx1 = 0 : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
+      end
+      x0 += dx0
+      x1 += dx1
+    end
   end
 
   # Given a triangle, calculate its normal
