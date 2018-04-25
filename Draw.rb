@@ -212,6 +212,7 @@ module Draw
   def self.gen_torus(cx, cy, cz, r1, r2)
     ret = Matrix.new(3, 0)
     phi = 0
+    delta = $dt * $TAU
     while phi < $TAU
       theta = 0
       while theta <= $TAU
@@ -219,9 +220,9 @@ module Draw
         y = r1 * sin(theta) + cy
         z = -1 * (r1 * cos(theta) + r2) * sin(phi) + cz
         ret.add_col([x, y, z])
-        theta += $dt * $TAU
+        theta += delta
       end
-      phi += $dt * $TAU
+      phi += delta
     end
     return ret
   end
@@ -292,17 +293,17 @@ module Draw
     end
 
     x0 = x1 = bot[0]
-    dx0 = (top[0] - bot[0])/(top[1] - bot[1])
+    (top[1] - bot[1]).abs < 1 ? dx0 = top[0]-bot[0] : dx0 = (top[0] - bot[0])/(top[1] - bot[1])
     (mid[1] - bot[1]).abs < 1 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1]) #catch div by 0 error
     ##TODO: Zs
     for y in ((bot[1].to_i+1)..(top[1].to_i))
+      if y >= mid[1]
+        (top[1] - mid[1]).abs < 1 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
+      end
       x0 += dx0
       x1 += dx1
       #puts [x0, y, 5, x1, y, 5].to_s
       line(x0, y, 5, x1, y, 5, r: r, g: g, b: b)
-      if y >= mid[1]
-        (top[1] - mid[1]).abs < 1 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
-      end
     end
   end
 
