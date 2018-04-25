@@ -280,30 +280,30 @@ module Draw
     p0[1] <= p1[1] && p0[1] <= p2[1] ? bot = p0 : (p1[1] <= p2[1] && p1[1] <= p0[1] ? bot = p1 : bot = p2)
     p0 != bot && p0 != top ? mid = p0 : (p1 != bot && p1 != top ? mid = p1 : mid = p2)
 
-    puts "???????" if bot == mid or mid == top or bot == top
-
-    puts "input:   #{[p0.to_s, p1.to_s, p2.to_s]}"
-    puts "ordered: #{[bot, mid, top]}"
-
     if $DEBUGGING && bot[1] >= top[1]
       puts "ERROR: DEGENERATE TRIANGLE..."
-      puts [p0.to_s, p1.to_s, p2.to_s].to_s
-      puts [bot, mid, top].to_s
+      puts "input:   #{[p0.to_s, p1.to_s, p2.to_s]}"
+      puts "ordered: #{[bot, mid, top]}"
       return
     end
 
     x0 = x1 = bot[0]
-    (top[1] - bot[1]).abs < 1 ? dx0 = top[0]-bot[0] : dx0 = (top[0] - bot[0])/(top[1] - bot[1])
-    (mid[1] - bot[1]).abs < 1 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1]) #catch div by 0 error
-    ##TODO: Zs
+    z0 = z1 = bot[2]
+    (top[1] - bot[1]).abs < 1 ? dx0 = top[0]-bot[0] : dx0 = (top[0] - bot[0])/(top[1] - bot[1]) #catch div by 0 error
+    (mid[1] - bot[1]).abs < 1 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
+    (top[1] - bot[1]).abs < 1 ? dz0 = top[2]-bot[2] : dz0 = (top[2] - bot[2])/(top[1] - bot[1])
+    (mid[1] - bot[1]).abs < 1 ? dz1 = mid[2]-bot[2] : dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
     for y in ((bot[1].to_i+1)..(top[1].to_i))
-      if y >= mid[1]
-        (top[1] - mid[1]).abs < 1 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
-      end
       x0 += dx0
       x1 += dx1
+      z0 += dz0
+      z1 += dz1
+      if y > mid[1]
+        (top[1] - mid[1]).abs < 1 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 errory
+        (top[1] - mid[1]).abs < 1 ? dz1 = top[2]-mid[2] : dz1 = (top[2] - mid[2])/(top[1] - mid[1]) #catch div by 0 error
+      end
       #puts [x0, y, 5, x1, y, 5].to_s
-      line(x0, y, 5, x1, y, 5, r: r, g: g, b: b)
+      line(x0, y, z0, x1, y, z1, r: r, g: g, b: b)
     end
   end
 
