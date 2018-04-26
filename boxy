@@ -7,7 +7,56 @@ display
 clear
 push
 rotate
-z 90
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
+box
+0 0 0 100 100 100
+display
+clear
+push
+rotate
+x 45
 box
 0 0 0 100 100 100
 display

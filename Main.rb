@@ -13,7 +13,7 @@ $TAU = PI*2
 # Changeable
 $RESOLUTION = 500 # All images are squares
 $DEBUGGING = true
-$BACKGROUND_COLOR = [100, 100, 100] # [r, g, b]
+$BACKGROUND_COLOR = [255, 255, 255] # [r, g, b]
 $DRAW_COLOR = [255, 255, 90] # [r, g, b]
 $INFILE = "script"
 $OUTFILE = "image.ppm"

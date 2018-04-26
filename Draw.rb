@@ -24,6 +24,7 @@ module Draw
     if dy >= 0 #if the line is in octants I or II
       if dy < dx #octant I
         d = 2*dy - dx
+        dx == 0 ? dz = 0 : dz = (z1-z0)/dx
         while x < x1
           plot(x, y, z, r: r, g: g, b: b)
           if d > 0
@@ -32,11 +33,13 @@ module Draw
           end
           x+=1
           d+=2*dy
+          z+=dz
         end
         plot(x, y, z, r: r, g: g, b: b)
 
       else #octant II
         d = dy - 2*dx
+        dy == 0 ? dz = 0 : dz = (z1-z0)/dy
         while y < y1
           plot(x, y, z, r: r, g: g, b: b)
           if d < 0
@@ -45,6 +48,7 @@ module Draw
           end
           y+=1
           d-=2*dx
+          z+=dz
         end
         plot(x, y, z, r: r, g: g, b: b)
       end
@@ -53,6 +57,7 @@ module Draw
 
       if dy.abs > dx #octant VII
         d = dy + 2*dx
+        dy == 0 ? dz = 0 : dz = (z1-z0)/dy
         while y > y1
           plot(x, y, z, r: r, g: g, b: b)
           if d > 0
@@ -61,11 +66,13 @@ module Draw
           end
           y-=1
           d+=2*dx
+          z+=dz
         end
         plot(x, y, z, r: r, g: g, b: b)
 
       else #octant VIII
         d = 2*dy + dx
+        dx == 0 ? dz = 0 : dz = (z1-z0)/dx
         while x < x1
           plot(x, y, z, r: r, g: g, b: b)
           if d < 0
@@ -74,6 +81,7 @@ module Draw
           end
           x+=1
           d+=2*dy
+          z+=dz
         end
         plot(x, y, z, r: r, g: g, b: b)
       end
@@ -251,7 +259,7 @@ module Draw
     while i < edgemat.cols
       coord0 = edgemat.get_col(i)
       coord1 = edgemat.get_col(i + 1)
-      line(coord0[0].to_i, coord0[1].to_i, coord1[0].to_i, coord1[1].to_i)
+      line(coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, coord1[0].to_i, coord1[1].to_i, coord1[2].to_i)
       i+=2
     end
   end
@@ -264,9 +272,9 @@ module Draw
       coord1 = polymat.get_col(i + 1)
       coord2 = polymat.get_col(i + 2)
       if (calc_normal(coord0, coord1, coord2)[2] > 0)
-        line(coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, r: 0, g: 0, b: 0)
-        line(coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, r: 0, g: 0, b: 0)
-        line(coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, r: 0, g: 0, b: 0)
+        #line(coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, r: 0, g: 0, b: 0)
+        #line(coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, r: 0, g: 0, b: 0)
+        #line(coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, r: 0, g: 0, b: 0)
         fill_triangle(coord0, coord1, coord2, r: rand(256), g: rand(256), b: rand(256))
       end
       i+=3
@@ -289,21 +297,20 @@ module Draw
 
     x0 = x1 = bot[0]
     z0 = z1 = bot[2]
-    (top[1] - bot[1]).abs < 1 ? dx0 = top[0]-bot[0] : dx0 = (top[0] - bot[0])/(top[1] - bot[1]) #catch div by 0 error
-    (mid[1] - bot[1]).abs < 1 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
-    (top[1] - bot[1]).abs < 1 ? dz0 = top[2]-bot[2] : dz0 = (top[2] - bot[2])/(top[1] - bot[1])
-    (mid[1] - bot[1]).abs < 1 ? dz1 = mid[2]-bot[2] : dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
-    for y in ((bot[1].to_i+1)..(top[1].to_i))
+    (top[1] - bot[1]).abs < 0.5 ? dx0 = top[0]-bot[0] : dx0 = (top[0] - bot[0])/(top[1] - bot[1]) #catch div by 0 error
+    (mid[1] - bot[1]).abs < 0.5 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
+    (top[1] - bot[1]).abs < 0.5 ? dz0 = top[2]-bot[2] : dz0 = (top[2] - bot[2])/(top[1] - bot[1])
+    (mid[1] - bot[1]).abs < 0.5 ? dz1 = mid[2]-bot[2] : dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
+    for y in ((bot[1].to_i+1)...(top[1].to_i))
       x0 += dx0
       x1 += dx1
       z0 += dz0
       z1 += dz1
-      if y > mid[1]
-        (top[1] - mid[1]).abs < 1 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 errory
-        (top[1] - mid[1]).abs < 1 ? dz1 = top[2]-mid[2] : dz1 = (top[2] - mid[2])/(top[1] - mid[1]) #catch div by 0 error
+      if y >= mid[1].to_i
+        (top[1] - mid[1]).abs < 0.5 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 errory
+        (top[1] - mid[1]).abs < 0.5 ? dz1 = top[2]-mid[2] : dz1 = (top[2] - mid[2])/(top[1] - mid[1]) #catch div by 0 error
       end
-      #puts [x0, y, 5, x1, y, 5].to_s
-      line(x0, y, z0, x1, y, z1, r: r, g: g, b: b)
+      line(x0.to_i, y.to_i, z0.to_i, x1.to_i, y.to_i, z1.to_i, r: r, g: g, b: b)
     end
   end
 
