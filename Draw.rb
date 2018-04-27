@@ -307,10 +307,10 @@ module Draw
       z0 += dz0
       z1 += dz1
       if y >= mid[1].to_i
-        (top[1] - mid[1]).abs < 0.5 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 errory
+        (top[1] - mid[1]).abs < 0.5 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
         (top[1] - mid[1]).abs < 0.5 ? dz1 = top[2]-mid[2] : dz1 = (top[2] - mid[2])/(top[1] - mid[1]) #catch div by 0 error
       end
-      line(x0.to_i, y.to_i, z0.to_i, x1.to_i, y.to_i, z1.to_i, r: r, g: g, b: b)
+      line(x0.to_i, y, z0, x1.to_i, y, z1, r: r, g: g, b: b)
     end
   end
 
