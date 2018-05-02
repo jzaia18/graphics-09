@@ -297,21 +297,40 @@ module Draw
 
     x0 = x1 = bot[0]
     z0 = z1 = bot[2]
-    (top[1] - bot[1]).abs < 0.5 ? dx0 = top[0]-bot[0] : dx0 = (top[0] - bot[0])/(top[1] - bot[1]) #catch div by 0 error
-    (mid[1] - bot[1]).abs < 0.5 ? dx1 = mid[0]-bot[0] : dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
-    (top[1] - bot[1]).abs < 0.5 ? dz0 = top[2]-bot[2] : dz0 = (top[2] - bot[2])/(top[1] - bot[1])
-    (mid[1] - bot[1]).abs < 0.5 ? dz1 = mid[2]-bot[2] : dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
-    for y in ((bot[1].to_i+1)...(top[1].to_i))
-      x0 += dx0
-      x1 += dx1
-      z0 += dz0
-      z1 += dz1
-      if y >= mid[1].to_i
-        (top[1] - mid[1]).abs < 0.5 ? dx1 = top[0]-mid[0] : dx1 = (top[0] - mid[0])/(top[1] - mid[1]) #catch div by 0 error
-        (top[1] - mid[1]).abs < 0.5 ? dz1 = top[2]-mid[2] : dz1 = (top[2] - mid[2])/(top[1] - mid[1]) #catch div by 0 error
+
+    dx0 = (top[0] - bot[0])/(top[1] - bot[1])
+    dz0 = (top[2] - bot[2])/(top[1] - bot[1])
+    if (mid[1] - bot[1]) >= 0.9
+      dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
+      dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
+      for y in (bot[1].to_i...mid[1].to_i)
+        line(x0.to_i, y, z0.to_i, x1.to_i, y, z1.to_i, r: r, g: g, b: b)
+        x0 += dx0
+        z0 += dz0
+        x1 += dx1
+        z1 += dz1
       end
-      line(x0.to_i, y, z0, x1.to_i, y, z1, r: r, g: g, b: b)
+    else
+      line(bot[0], bot[1].to_i, bot[2], mid[0], mid[1].to_i, mid[2], r: r, g: g, b: b)
     end
+
+    x1 = mid[0]
+    z1 = mid[2]
+
+    if (top[1] - mid[1]) >= 0.9
+      dx1 = (top[0] - mid[0])/(top[1]-mid[1])
+      dz1 = (top[2] - mid[2])/(top[1]-mid[1])
+      for y in (mid[1].to_i...top[1].to_i)
+        line(x0.to_i, y, z0.to_i, x1.to_i, y, z1.to_i, r: r, g: g, b: b)
+        x0 += dx0
+        z0 += dx0
+        x1 += dx1
+        z1 += dx1
+      end
+    else
+      line(top[0].to_i, top[1].to_i, top[2].to_i, mid[0].to_i, mid[1].to_i, mid[2].to_i, r: r, g: g, b: b)
+    end
+
   end
 
   # Given a triangle, calculate its normal
